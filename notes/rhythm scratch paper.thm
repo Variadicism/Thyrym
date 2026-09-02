@@ -1,0 +1,56 @@
+# ChatGPT-generated idea of a music program written in the language:
+\ groove from bpm 100
+    with bars 4
+    with pattern [
+        kick at [1, 3],
+        snare at [2, 4],
+        hats every 0.5
+    ]
+    render as midi
+
+\ hats every spacing
+    with hits from range 1 to bars * 4 by spacing
+    return hats at hits
+
+\ kick at beats
+    return notes of "C1" at beats with velocity 100
+
+\ snare at beats
+    return notes of "D1" at beats with velocity 110
+
+\ hats at beats
+    return notes of "F#1" at beats with velocity 80
+
+\ notes of pitch at beats with velocity
+    return beats mapped to
+        note with pitch
+        starting at beat
+        lasting 0.1
+        with velocity
+
+# More realistic implementation:
+\a time := a positive fraction
+	with
+		Beats Per Bar := Numerator
+		Beat Note := Denominator
+	where
+		Beat Note is a power of 2
+
+\a beat (in 'Time or 4/4')? := a positive fraction where
+	Denominator is a power of 2 and
+	it < Beats Per Bar of Time
+
+\hats every 'Interval, a beat in any T' in 'Time, a T' :=
+	from Beat := 1 to < Beat Per Bar of Time + 1 by Interval,
+		F#1 note at Beat
+
+\kick at 'Beats' := D1 note at each of Beats
+
+\snare at 'Beats' := C1 note at each of Beats
+
+Song := at 100bpm, in 4/4 time, with 4 bar phrases,
+	kick at 1 and 3
+	snare at 2 and 4
+	hats every 1/2
+
+render Song as MIDI

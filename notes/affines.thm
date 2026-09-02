@@ -1,0 +1,242 @@
+https://chatgpt.com/g/g-p-68f5d365ad788191bcb47e8e80aac929/c/68fc524b-6a0c-8331-985b-1647abeb2089
+
+#(
+Every argument whose type is affine must be preceded by one of:
+	a mutable, a view of, a donated, or a deposited.
+
+Every result whose type is affine must be preceded by one of:
+	a new, a mutable, or a deposited.
+
+All mutated arguments should be documented in the act type with a "mutating" clause, e.g., "mutating Count".
+	- You can also be specific with "mutating... to", e.g., "mutating Count to Count + 1".
+	- CATCH: Foreign functions like `fopen` cannot have a "to" part on any values they mutate unless that value is in an argument or the return!
+		# This is because if they mutate anything, the compiler has to retrieve the after the function call to invisibly return it as an affine transformation. But, between that function call and saving the value to stack memory, something could mutate it! But, return values can be retrieved safely (of course) and arguments are guaranteed not to mutate after the function call thanks to affine guarantees in Thyrym code that calls it.
+)#
+
+\'Domain, an act domain' affine 'Base, a type' := Base with
+	\create 'One' :: a Domain act making a new one
+	\destroy 'One, a donated one' :: a Domain act
+
+#################### POINTERS & BUFFERS
+
+\pointer := a memmeta affine thing with Target, a type
+\pointer to 'Target, a type' := pointer with Target
+
+\buffer := a pointer + a list of Targets with
+	Fill, a count := 0 # This basic implementation assumes front-loading only.
+\empty 'Buffer, a type of buffer' :=
+	Buffer with Fill = 0
+\full 'Buffer, a type of buffer' :=
+	Buffer with Full = Length of Base
+for T, a type,
+\'Buffer, a type of buffer' of 'Length, a count' 'Target, a plural T' :=
+	Buffer with Target and Length
+
+use
+	\size_t :: a type of integer
+	\sizeof('Value, a thing') :: a size_t
+	\char :: an 8 bit integer
+	\int :: a 16 bit integer
+	\long 'Base, a type of integer'
+		:: same as Base but Memory Footprint = Memory Footprint of Base * 2
+	\'Target, a type'* :: a type of pointer to Target
+	for T, a type and L, a count,
+	\'Buffer, a view of a buffer of L Ts'['Index, a count < L'] :: T
+	for A, \&'Value, A' :: a buffer for 1 A containing Value
+from base C  # The basic C symbols, no libraries.
+
+use
+	# Note how this isn't just one simple function call, but translates directly to C syntax.
+	# This allows us to use multiple parts of C in conjunction to better maintain type safety.
+	\malloc(sizeof('Type, a type') * 'Length, a count')
+		:: a memmeta act making a new empty buffer with Length Types
+	\free('Pointer, a donated pointer')
+		:: a memmeta act making nil
+from stdlib.c
+
+\heap 'Buffer, a type of buffer' := Base with
+	# Note: arguments types are derived from their parent types.
+	\create 'one' :=
+		Pointer := malloc(sizeof(T) * Length)
+		Pointer with Fill := 0 and Length
+	\destroy 'one' := free(one)
+	\index 'Index' of 'one' := one[Index]
+
+# Note that `strlen` does not produce "an act"!
+# Because the Pointer is affine and passed as a view, we know it won't change!
+use \strlen('Pointer, a view of a char*') :: a size_t from string.c
+
+\C string := a memmeta affine string
+	where each <= 0x7F
+	with
+		Length := strlen(Pointer)  # memoized?
+		Buffer, a full buffer of Length + 1 chars  # +1 for the null terminator!
+		\index 'Index, a count < Length' of 'one' := Buffer[Index]
+
+\'String, a string' for C
+		:: a memmeta act making a new C string where it = String :=
+	Footprint := sum of String but each Memory Footprint
+	with Buffer from a buffer (Length of String + 1) bits,
+		String as bits + "\0"
+	a C string with
+		Pointer := &Buffer
+		Length := Length of String
+
+#################### FILES
+
+### Modes & Paths
+
+File Path Prohibited Characters :=  # Long and OS-specific
+
+\file path := a describable list of strings
+	where
+		# Paths can start with empty string for absolute paths
+		Length = 1 or from I := 1 to Length - 1, index I of it is not empty
+		each has none of File Path Prohibited Characters
+	with
+		\'one' briefly := (if not one starts with "", "./") + one joined by "/"
+
+\file mode := a describable thing with
+	Read, a bit
+	Write, a bit where if not Read, it
+	Clobber, a bit where if not Write, not it
+	Binary, a bit
+
+\C file mode := a file mode with
+	Empty, a bit where if not Clobber, not it
+	\'one' for fopen :=
+		Base :=
+			if Append,
+				if Read, "a+"
+				else, "a"
+			else if Write,
+				if Read,
+				   if Clobber,
+						if Empty, "w+"
+						else, "r+"
+					else, "w+x"
+				else if Clobber, "w"
+				else, "wx"
+			else, "r"
+		Base + if Binary, "b"
+	\'one' briefly := one for fopen
+
+\"Base"(just read|just write|read and write)
+		"Format"(binary|text)?
+		"Clobber"("Empty"(emptying and)? clobbering)? :=
+	a C file mode with
+		Read := Base /= "just write"
+		Write := Base /= "just read"
+		Clobber := Clobber is given
+		Empty := Empty is given
+		Binary := Format = "binary"
+
+### Basic File Types
+
+\file operation := a thing with
+	Path, a file path
+	Mode, a file mode or nil  # "nil" implies metadata-only operations like stat.
+\'Path, a file path' for 'Mode, a file mode or nil' := a file operation with Path and Mode
+# Files already have Path and Mode, so they already fit this definition.
+
+\file := an act domain with
+	Operations, a list of file operations unique by Path  
+
+\file := a file affine thing + a file operation with
+	Mode, a file mode
+
+\binary file := a file where Binary of Mode
+
+\text file := a file where not Binary of Mode
+
+### Errno
+
+use
+	\errno :: a state affine int
+	\EACCES :: an int
+	\ETXTBUSY :: an int
+	...
+from errno.c
+
+\errno metadata := an uncountable thing with  # uncountable means no article or plural form
+	Path, maybe a file path := nil
+\check errno for 'Metadata, errno metadata'
+		:: a state act making an error or nil mutating errno to 0 :=
+	Path := Path of Metadata
+	Error Number :^= errno
+	errno <^- 0
+	if Error Number = it with
+		EACCES,
+			"You don't have permission to access `Path or "that file"`"!
+		ETXTBUSY,
+			"The `Path + if Path, " "`text file is busy"!
+		...
+		else, "An unknown error #`Error Number` (0x`Error Number in hex`) occurred"!
+# Example: check errno for .inputs/test.txt
+
+### Opening & Closing
+
+use \FILE* :: a file affine C type from stdio.c
+use
+	\feof('File, a view of a C file') :: an int
+	\ferror('File, a view of a C file') :: an int
+	\EOF :: an int
+	\fopen('Path, a C string', 'Mode, a C string =~ /"(r|a|wx?)\+?b?"/')
+		:: a file act on Path for Mode making null or a new FILE*
+	\fgetc('File, a mutable C file')
+		:: a file act on File making EOF or a char
+			mutating File
+	\fclose('File, a donated C file') :: a file act on File making 0 or EOF
+from cstdio.c
+
+\C file := a file with
+	Pointer, a FILE*
+	Mode, a C file mode
+	\create 'one' :: a file act on Path for Mode making an error or a C file for Mode :=
+		null or Pointer :^= fopen(Path for C, Mode for fopen)
+		if not Pointer,
+			^check errno for Path
+			# Not all implementations of fopen set errno, but returning null is still an error.
+			"An unknown error occurred while attempting to open `Path`"!
+		else,
+			a C file with Pointer, Path, and Mode
+	\destroy 'one' :: a file act on one making an error or nil :=
+		Indicator :^= fclose(Pointer)
+		if Indicator = EOF,
+			^check errno for Path
+			"An unknown error occurred while attempting to close `Path`"!
+		else, nil
+
+### Reading
+
+\read a byte from 'File, a mutable text file'
+		:: a file act making an error or a char
+			mutating File :=
+	EOF or Byte :^= fgetc(File)
+	if EOF,
+		Error Indicator :^= ferror(File)
+		if Error Indicator /= 0,
+			^check errno for File
+		else,
+			"There is no more to read from `File`"!
+	else, Byte
+
+### Size
+
+use off_t :: a type of integer from sys/types.c
+use
+	\stat := a type with
+		\'one'.st_size :: an off_t
+	\stat('Path, a char*', 'Buffer, a mutable empty buffer of 1 stat')
+		:: a file act on Path for nil making a stat
+			mutating Buffer to full Buffer
+from sys/stat.c  # OS-specific
+
+\get the size of 'Path, a file path'
+		:: a file and memmeta act making an error or a count :=
+	with Buffer from a buffer of 1 stat,
+		Stat :^= stat(Path for C, Buffer)
+		Size := Stat.st_size
+		if Size < 0,
+			"Attempts to check the size of `Path` returned a negative result (`Size`)"!
+		else, Size

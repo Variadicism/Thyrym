@@ -1,0 +1,20 @@
+Note: change the color of the "^" when computing?
+
+IDLE:
+ /^\
+[• •]
+/‾*‾\
+
+WORKING (alternate):
+  /^\
+ [• •]
+ /‾+‾\
+
+  /^\
+ [• •]
+ /‾x‾\
+
+ERROR:
+  /^\
+ [• •]
+ /‾!‾\
