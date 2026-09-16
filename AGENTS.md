@@ -2,7 +2,7 @@
 
 Documentation should be completed in Markdown, though supplemental files may be permitted, e.g., for large code samples.
 
-As of this writing, `design.md` is the root of the documentation in the `docs` directory.
+The project-root `README.md` is the documentation landing page. `docs/design.md` is the root of the language-design documentation.
 
 Documents or anchors within documents may be referenced within documents in the `docs` directory.
 Larger topics may be extracted into their own Markdown documents as long as they are referenced in the root document.
