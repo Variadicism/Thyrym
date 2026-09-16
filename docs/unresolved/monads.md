@@ -1,6 +1,6 @@
 # Monad Questions
 
-This document tracks details left unresolved by the [monads](../monads.md#monads-and-contextual-binding) design. Statements here are not language guarantees until their answers are incorporated into the design.
+This document tracks details left unresolved by the [monads](../design/monads.md#monads-and-contextual-binding) design. Statements here are not language guarantees until their answers are incorporated into the design.
 
 ## Declaration Grammar
 

@@ -1,9 +1,9 @@
-# Thyrym — Core Language Foundations
+# Thyrym — Core Foundations
 
 > **Status:** Early foundational documentation  
 > This document describes the current high-level design of Thyrym. Some areas are intentionally incomplete and will be expanded from dedicated design discussions.
 
-The reasons behind foundational choices are recorded in [core language](rationale/core language.md#core-language-decisions). Provisional foundational areas and questions that still require design work are tracked in [core language](unresolved/core language.md#core-language-questions).
+The reasons behind foundational choices are recorded in [core](../rationale/core.md#core-decisions). Provisional foundational areas and questions that still require design work are tracked in [core](../unresolved/core.md#core-questions).
 
 ---
 
@@ -766,7 +766,7 @@ For example, a collection whose identifying field is unique can provide the stro
 
 Injective operations transport the relevant uniqueness guarantee without changing its source. In particular, an injective transformation preserves a probabilistic collision guarantee but does not turn it into certainty.
 
-The full model, including probabilistic identifier storage and partial identifiers, is described in [uniqueness](uniqueness.md#scoped-uniqueness). Its design reasoning is recorded in [uniqueness](rationale/uniqueness.md#uniqueness-decisions), and unsettled details are tracked in [uniqueness](unresolved/uniqueness.md#uniqueness-questions).
+The full model, including probabilistic identifier storage and partial identifiers, is described in [uniqueness](uniqueness.md#scoped-uniqueness). Its design reasoning is recorded in [uniqueness](../rationale/uniqueness.md#uniqueness-decisions), and unsettled details are tracked in [uniqueness](../unresolved/uniqueness.md#uniqueness-questions).
 
 ---
 
@@ -912,7 +912,7 @@ Monads do not compose automatically. A monad may declare lawful transformer or d
 
 The type phrase for the IO-like monad is `an act making A`. Nested phrases preserve actual constructor order, so `an act making an error or A` and `an error or an act making A` are different types.
 
-The full composition, binding, inference, and discard model is described in [monads](monads.md#monads-and-contextual-binding). Its rationale is recorded in [monads](rationale/monads.md#monad-decisions), and unsettled details are tracked in [monads](unresolved/monads.md#monad-questions).
+The full composition, binding, inference, and discard model is described in [monads](monads.md#monads-and-contextual-binding). Its rationale is recorded in [monads](../rationale/monads.md#monad-decisions), and unsettled details are tracked in [monads](../unresolved/monads.md#monad-questions).
 
 ---
 
@@ -1293,7 +1293,7 @@ This foundational document should provide integration points for those summaries
 
 ## 37. Open Design Questions
 
-The following areas remain intentionally unresolved or provisional. The questions to be answered and the constraints on their answers are tracked in [core language](unresolved/core language.md#core-language-questions).
+The following areas remain intentionally unresolved or provisional. The questions to be answered and the constraints on their answers are tracked in [core](../unresolved/core.md#core-questions).
 
 ### Operator core
 
@@ -1343,11 +1343,11 @@ The system likely needs a specialized built-in concept for affine external resou
 
 ### Uniqueness details
 
-The exact declarations for scoped uniqueness, probabilistic generator metadata and collision policy, partial-identifier contract, composition rules, and injectivity proofs remain open. These items are tracked in [uniqueness](unresolved/uniqueness.md#uniqueness-questions).
+The exact declarations for scoped uniqueness, probabilistic generator metadata and collision policy, partial-identifier contract, composition rules, and injectivity proofs remain open. These items are tracked in [uniqueness](../unresolved/uniqueness.md#uniqueness-questions).
 
 ### Monad declarations and inference
 
-The exact declarations for functors, applicatives, monads, lawful distribution, and dangerous contexts remain open, as do the implicit solver, deeply nested danger detection, pattern matching, law verification, and explicit sequencing boundaries. These items are tracked in [monads](unresolved/monads.md#monad-questions).
+The exact declarations for functors, applicatives, monads, lawful distribution, and dangerous contexts remain open, as do the implicit solver, deeply nested danger detection, pattern matching, law verification, and explicit sequencing boundaries. These items are tracked in [monads](../unresolved/monads.md#monad-questions).
 
 ---
 

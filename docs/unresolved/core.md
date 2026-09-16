@@ -1,6 +1,6 @@
-# Core Language Questions
+# Core Questions
 
-This document tracks questions left unresolved by the foundational Thyrym [design](../design.md#37-open-design-questions). Statements in this document are not language guarantees until their answers are incorporated into the design.
+This document tracks questions left unresolved by the foundational Thyrym [core](../design/core.md#37-open-design-questions). Statements in this document are not language guarantees until their answers are incorporated into the design.
 
 ## Operators And Bootstrapping
 
@@ -8,7 +8,7 @@ This document tracks questions left unresolved by the foundational Thyrym [desig
 
 Which operators, types, and compiler facilities must be intrinsic rather than implemented through ordinary operators?
 
-Implementation work must determine whether the likely core elements listed in [design](../design.md#35-the-irreducible-core) are all necessary and whether any omitted facility cannot be bootstrapped.
+Implementation work must determine whether the likely core elements listed in [core](../design/core.md#35-the-irreducible-core) are all necessary and whether any omitted facility cannot be bootstrapped.
 
 ### Conventional Operator Forms
 

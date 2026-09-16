@@ -1,6 +1,6 @@
 # Uniqueness Decisions
 
-This document records the reasoning behind the scoped [uniqueness](../uniqueness.md#scoped-uniqueness) design without extending its guarantees.
+This document records the reasoning behind the scoped [uniqueness](../design/uniqueness.md#scoped-uniqueness) design without extending its guarantees.
 
 ## Behavioral Guarantees Instead Of Markers
 

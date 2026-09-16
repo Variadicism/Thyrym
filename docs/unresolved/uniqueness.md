@@ -1,6 +1,6 @@
 # Uniqueness Questions
 
-This document tracks details left unresolved by the scoped [uniqueness](../uniqueness.md#scoped-uniqueness) design. Statements here are not language guarantees until their answers are incorporated into the design.
+This document tracks details left unresolved by the scoped [uniqueness](../design/uniqueness.md#scoped-uniqueness) design. Statements here are not language guarantees until their answers are incorporated into the design.
 
 ## Surface Declarations
 

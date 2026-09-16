@@ -1,6 +1,6 @@
 # Monad Decisions
 
-This document records the reasoning behind the [monads](../monads.md#monads-and-contextual-binding) design without extending its guarantees.
+This document records the reasoning behind the [monads](../design/monads.md#monads-and-contextual-binding) design without extending its guarantees.
 
 ## Natural Type Phrases
 

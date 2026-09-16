@@ -2,7 +2,7 @@
 
 Uniqueness in Thyrym is a family of scoped guarantees, not one universal nominal type. A guarantee must arise from meaningful declarations, capabilities, and invariants. A marker, tag, or stamp with no behavioral consequence does not create a distinct type under this model.
 
-The rationale for this model is recorded in [uniqueness](rationale/uniqueness.md#uniqueness-decisions). Surface syntax and other unsettled details are tracked in [uniqueness](unresolved/uniqueness.md#uniqueness-questions).
+The rationale for this model is recorded in [uniqueness](../rationale/uniqueness.md#uniqueness-decisions). Surface syntax and other unsettled details are tracked in [uniqueness](../unresolved/uniqueness.md#uniqueness-questions).
 
 ## Sources Of Uniqueness
 
