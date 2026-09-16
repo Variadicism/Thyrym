@@ -3,7 +3,7 @@
 > **Status:** Early foundational documentation  
 > This document describes the current high-level design of Thyrym. Some areas are intentionally incomplete and will be expanded from dedicated design discussions.
 
-The reasons behind foundational choices are recorded in [core language decisions](rationale/core language decisions.md#core-language-decisions). Provisional areas and questions that still require design work are tracked in [core language questions](unresolved/core language questions.md#core-language-questions).
+The reasons behind foundational choices are recorded in [core language decisions](rationale/core language decisions.md#core-language-decisions). Provisional foundational areas and questions that still require design work are tracked in [core language questions](unresolved/core language questions.md#core-language-questions).
 
 ---
 
@@ -758,6 +758,16 @@ an integer where it < 0
 
 because the former invariant implies the latter.
 
+### Scoped uniqueness
+
+Uniqueness is not a nominal marker in Thyrym. It is a scoped guarantee arising from meaningful capabilities and invariants. The guarantee may be deterministic or generative, structural or relational, or probabilistic.
+
+For example, a collection whose identifying field is unique can provide the stronger guarantee that filtering by equality on that field returns at most one member. Inserting an arbitrary runtime identifier into such a collection requires evidence that the identifier is absent. A condition can establish that fact at runtime and refine the types available in its guarded branch, where the compiler can then prove that insertion preserves the collection invariant.
+
+Injective operations transport the relevant uniqueness guarantee without changing its source. In particular, an injective transformation preserves a probabilistic collision guarantee but does not turn it into certainty.
+
+The full model, including probabilistic identifier storage and partial identifiers, is described in [uniqueness](uniqueness.md#scoped-uniqueness). Its design reasoning is recorded in [uniqueness decisions](rationale/uniqueness decisions.md#uniqueness-decisions), and unsettled details are tracked in [uniqueness questions](unresolved/uniqueness questions.md#uniqueness-questions).
+
 ---
 
 ## 21. Invariant Reasoning
@@ -1325,6 +1335,10 @@ Exact syntax and surrounding operator form may still evolve.
 ### Resource representation
 
 The system likely needs a specialized built-in concept for affine external resources, but its precise type representation is deferred to the existing resource-design work.
+
+### Uniqueness details
+
+The exact declarations for scoped uniqueness, probabilistic generator metadata and collision policy, partial-identifier contract, composition rules, and injectivity proofs remain open. These items are tracked in [uniqueness questions](unresolved/uniqueness questions.md#uniqueness-questions).
 
 ---
 
