@@ -2,7 +2,7 @@
 
 Thyrym preserves Haskell-style algebraic distinctions among functors, applicatives, monads, and lawful transformer behavior while reducing explicit transformer plumbing. Contextual structure is implicit only where a declared transformation is lawful and meaning-preserving; binding depth remains an explicit programmer choice.
 
-The reasons behind these choices are recorded in [monad decisions](rationale/monad decisions.md#monad-decisions). Declaration grammar and other unsettled details are tracked in [monad questions](unresolved/monad questions.md#monad-questions).
+The reasons behind these choices are recorded in [monads](rationale/monads.md#monad-decisions). Declaration grammar and other unsettled details are tracked in [monads](unresolved/monads.md#monad-questions).
 
 ## Type Phrases
 
