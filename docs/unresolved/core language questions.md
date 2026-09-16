@@ -60,12 +60,6 @@ How should affine external resources, their lifetimes, and their consumption be 
 
 The design may require a specialized built-in resource concept, but its exact representation is deferred.
 
-### Nested Monadic Binding
-
-What is the exact syntax and typing behavior for binding through multiple nested monadic layers?
-
-The current caret-based syntax establishes the direction but does not fully specify every nested case.
-
 ## Imports And Modules
 
 ### Visibility

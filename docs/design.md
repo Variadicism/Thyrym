@@ -906,6 +906,14 @@ Users may define their own monads.
 
 Monadic composition follows essentially the same semantic ideas as Haskell, expressed through Thyrym's own syntax and operator system.
 
+Functor mapping transforms values without flattening a returned context. Applicative composition combines independent contextual computations. Monad binding is required when the structure of a later computation depends on an earlier result.
+
+Monads do not compose automatically. A monad may declare lawful transformer or distribution behavior for compatible inner contexts, but being a monad alone does not imply such behavior.
+
+The type phrase for the IO-like monad is `an act making A`. Nested phrases preserve actual constructor order, so `an act making an error or A` and `an error or an act making A` are different types.
+
+The full composition, binding, inference, and discard model is described in [monads](monads.md#monads-and-contextual-binding). Its rationale is recorded in [monad decisions](rationale/monad decisions.md#monad-decisions), and unsettled details are tracked in [monad questions](unresolved/monad questions.md#monad-questions).
+
 ---
 
 ## 26. Errors as a Monad
@@ -931,41 +939,32 @@ Errors are therefore ordinary values.
 
 They are not exceptions.
 
+The no-useful-value type is `nil`, allowing types such as `an act making nil` and `an act making an error or nil`.
+
+`an error or` is a dangerous context to discard because doing so can hide failure. It must be propagated, handled, retained as data, or explicitly acknowledged as discarded.
+
 ---
 
 ## 27. Monadic Binding Syntax
 
 Thyrym currently uses `^`-based syntax for monadic binding.
 
-To bind a monadic result into a name:
+Ordinary definition uses `:=`. Each caret in a binding operator explicitly binds through exactly one contextual layer:
 
 ```thyrym
-File :^= open Path to read
+Value := expression
+Value :^= expression
+Value :^^= expression
+Value :^^^= expression
 ```
 
-The `:^=` itself performs the monadic binding.
-
-A leading caret is **not** also required.
-
-For a monadic operation whose result is not named:
+The compiler never infers caret depth. Fewer carets intentionally retain inner contexts as values. For example, if an expression has type:
 
 ```thyrym
-^close File
+an act making an error or a map of IDs to strings
 ```
 
-A leading `^` sequences/binds the monadic operation while ignoring its resulting value.
-
-Additional carets may bind through multiple nested monadic layers.
-
-For example, a value such as:
-
-```text
-an act returning an error or an integer
-```
-
-contains multiple monadic layers.
-
-The exact syntax can express binding through more than one such layer.
+then `:^=` binds only the act and names an `an error or a map of IDs to strings`, while `:^^=` also binds through the error and names the map. Implicit lifting or lawful distribution may occur around this explicit choice but cannot replace it.
 
 Monadic binding syntax is expected to be implementable through the ordinary operator system rather than requiring primitive compiler support.
 
@@ -973,22 +972,28 @@ Monadic binding syntax is expected to be implementable through the ordinary oper
 
 ## 28. Monadic Chain Boundaries
 
-A monadic chain does not depend on indentation.
-
-Caret-prefixed operations indicate continued monadic sequencing.
-
-The final operator in a chain can simply omit the sequencing caret.
-
-Conceptually:
+A monadic chain does not depend on indentation. For a contextual computation whose returned value is not needed, each leading caret sequences through one layer without naming its successful payload:
 
 ```thyrym
-A :^= first operation
-^second operation
-^third operation
-final operation
+^close File
+^^log Message
 ```
 
-The lack of the caret on the final operation provides a natural termination point.
+The final expression in the continuation can omit a sequencing caret, providing a natural chain boundary.
+
+Caret depth remains semantically significant for effect-only statements. Given an operation producing `an act making an error or nil`, `^^operation` binds through both the act and error so failure propagates. `^operation` binds only the act and would otherwise discard the remaining error context.
+
+Dangerous contexts cannot be silently discarded. A trailing `!` after the carets explicitly acknowledges the discard:
+
+```thyrym
+^!log Message
+```
+
+The carets still choose binding depth; `!` only acknowledges dangerous information left in the discarded result. `an error or` is dangerous. Acts, lists, and maybe/perhaps contexts are not dangerous merely because they are contextual, although a dangerous context nested inside them may require handling under rules that remain under design.
+
+The compiler may lower independent caret bindings applicatively rather than forcing monadic sequencing. It may not infer a different caret count. Dependent bindings still require monadic sequencing, and acts may be reordered or run concurrently only when their data, effect, and resource contracts establish independence.
+
+Detailed rules and examples are provided in [monads](monads.md#explicit-caret-depth).
 
 ---
 
@@ -1339,6 +1344,10 @@ The system likely needs a specialized built-in concept for affine external resou
 ### Uniqueness details
 
 The exact declarations for scoped uniqueness, probabilistic generator metadata and collision policy, partial-identifier contract, composition rules, and injectivity proofs remain open. These items are tracked in [uniqueness questions](unresolved/uniqueness questions.md#uniqueness-questions).
+
+### Monad declarations and inference
+
+The exact declarations for functors, applicatives, monads, lawful distribution, and dangerous contexts remain open, as do the implicit solver, deeply nested danger detection, pattern matching, law verification, and explicit sequencing boundaries. These items are tracked in [monad questions](unresolved/monad questions.md#monad-questions).
 
 ---
 

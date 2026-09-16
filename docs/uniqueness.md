@@ -78,7 +78,7 @@ The absence test may execute at runtime. Compilation enforces that its resulting
 
 No specific lookup implementation is required. A sequence scan, binary search, hash index, tree, or prior static proof may establish absence. The type semantics require the information, not a particular algorithm.
 
-A fallible insertion operator that performs the check internally remains expressible. If it returns a duplicate error, that error must be handled or propagated under Thyrym's ordinary error rules. Such an operator is not the foundational mechanism because condition refinement already makes the required evidence available to ordinary invariant-preserving operations.
+A fallible insertion operator that performs the check internally remains expressible. If it returns a duplicate error, that error must be handled, propagated, retained as data, or explicitly acknowledged as discarded under Thyrym's ordinary error rules. Such an operator is not the foundational mechanism because condition refinement already makes the required evidence available to ordinary invariant-preserving operations.
 
 ### Invariant-Preserving Operations
 

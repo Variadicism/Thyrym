@@ -10,7 +10,7 @@ A nominal `unique` marker, stamp, or tag was rejected because Thyrym types diffe
 
 Restricted constructors and proof tokens are unnecessary for ordinary structural uniqueness. A condition that establishes absence already refines the guarded type environment, allowing the normal collection operation to prove that it preserves the invariant.
 
-A mandatory fallible insertion protocol was also rejected as the foundational model. Guard-first refinement exposes the absence fact to ordinary operations and can support more than insertion without introducing a special result protocol. APIs may still return result types when useful, but a duplicate error must be handled or propagated under Thyrym's ordinary error rules.
+A mandatory fallible insertion protocol was also rejected as the foundational model. Guard-first refinement exposes the absence fact to ordinary operations and can support more than insertion without introducing a special result protocol. APIs may still return result types when useful, but a duplicate error must be handled, propagated, retained as data, or explicitly acknowledged as discarded under Thyrym's ordinary error rules.
 
 This design distinguishes compile-time enforcement from runtime knowledge. For arbitrary input, the absence query may run at runtime; compilation checks that the established fact governs the invariant-preserving path.
 
