@@ -42,6 +42,12 @@ How will Thyrym establish that user-defined monad, transformer, and distribution
 
 Possibilities include proof, testing, trusted declarations, or another mechanism.
 
+## Preserving Nested Type Relations
+
+How should a higher-order operation preserve the exact monad or effect specialization returned by its operator argument while changing a value nested inside it?
+
+A map-like operation may need the exact task or act family from the mapper, the collection family from its input, and a new element type. Writing one concrete wrapper can erase a more specific monad subtype. This should be solved with the general parameter and relation model rather than ad hoc effect syntax.
+
 ## Diagnostic Wording
 
 What exact diagnostics should explain an incorrect caret count or dangerous discard and trace a later type mismatch back to its binding?

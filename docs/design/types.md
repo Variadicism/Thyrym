@@ -1,6 +1,6 @@
 # Types And Compile-Time Knowledge
 
-Thyrym uses first-class structural types enriched with invariants. The rationale for this model is recorded in [types](../rationale/types.md#type-decisions), and unsettled details are tracked in [types](../unresolved/types.md#type-questions).
+Thyrym uses first-class structural types enriched with polymorphic relationships and invariants. The rationale for this model is recorded in [types](../rationale/types.md#type-decisions), and unsettled details are tracked in [types](../unresolved/types.md#type-questions).
 
 ## Types Are First-Class Values
 
@@ -69,35 +69,177 @@ All ordinary values ultimately satisfy `a thing`. It represents the minimum usef
 
 ## Parameters And Generic Operators
 
-Generic operators use parameters to relate argument and result types:
+Repeated broad structural type phrases do not implicitly denote the same specialization. In:
 
 ```thyrym
-for all E,
-    \'First, a list of Es' + 'Last, a list of Es'
-        => a list of Es
-        where Length := Length of First + Length of Last
+\'Augend, a float' + 'Addend, a float'
+    => a float
 ```
 
-A parameter is not intended to appear only in the arguments or only in the return type. Its purpose is specifically to relate the two.
+each `a float` may independently be satisfied by a different specialized type. The declaration alone does not say that both arguments share a specialization or that the result preserves either argument's specialization.
 
-A parameter may specify a minimum bound. Every matched type must satisfy that bound.
+Generic operators use parameters to state shared relationships explicitly. The current introductory form is `for any`:
 
-When one parameter matches multiple argument types, all matches are combined with `or`:
+```thyrym
+for any F, a float,
+    \'Augend, F' + 'Addend, F'
+        => F
+```
+
+`F` is a **parameter** with `a float` as its minimum bound. Every occurrence must satisfy that bound. A parameter is a relationship carrier rather than a requirement that every argument have one exact nominal or runtime type.
+
+When one parameter matches several actual types, Thyrym combines them using its existing structural `or` behavior. The resulting guaranteed capability set is their common intersection. Structural simplification may retain a more specific common type:
 
 ```text
-list of cats + list of cats
--> list of cats
+GLSL float + GLSL float
+-> GLSL float
 
-list of cats + list of dogs
--> list of cats or dogs
+IEEE float + GLSL float
+-> float
 
-list of dogs + list of animals
--> list of dogs or animals
+cat + dog
+-> cat or dog
 ```
 
-Structural simplification may reduce a combination. Unrelated values may retain only the guarantees of `a thing`. This is valid; an error occurs only when later code requires a capability the result cannot guarantee.
+The final alternative guarantees only capabilities shared by cats and dogs. Unrelated values may therefore retain only the guarantees of `a thing`; an error occurs only when later code requires a capability the combination cannot guarantee.
 
 The parameter itself is a type value available inside the generic implementation. Invariants participate in matching and `or` combinations without a separate generic-invariant mechanism.
+
+A parameter may be intentionally unconstrained when the algorithm does not require a narrower capability:
+
+```thyrym
+for any A and B,
+    \'Function, A -> B' mapped over 'Values, a list of As'
+        => same as Values but Element := B
+```
+
+Authors should state only restrictions required by the implementation. Descriptive structures such as `a list of As` remain inline instead of being replaced with opaque parameters unless the identity of the list family itself matters.
+
+The punctuation for complex `for any` lists remains provisional. Current examples use `Name, a type`, may separate complex entries with semicolons, and reserve `=>` for the boundary before the return type.
+
+### Constraints
+
+Parameters and argument types use the ordinary invariant system rather than a separate generic-constraint language:
+
+```thyrym
+for any I, an integer,
+    \'Numerator, I' / 'Denominator, I /= 0'
+        => I
+```
+
+The longer `I where it /= 0` form remains available when it reads more clearly or the proposition is more involved.
+
+## Type Relations
+
+A **relation** states how a type depends on something already in scope. Relations complement parameters: parameters express shared or symmetric inference, while relations express directional preservation or intentional independence.
+
+### `same as`
+
+`same as Argument` preserves the type of a particular argument:
+
+```thyrym
+for any F, a float,
+    \'Augend, F' * 'Addend, F'
+        => same as Augend
+```
+
+This differs from returning `F`. `F` is the common type inferred from all its occurrences; `same as Augend` follows the complete specialized type of `Augend` directionally.
+
+A working explicit-intersection form is:
+
+```thyrym
+same as Augend + Addend
+```
+
+It denotes the common structural capabilities of the referenced argument types. Its exact integration with the solver remains under design.
+
+### `same as ... but ...`
+
+`but` can modify one exposed role while preserving the rest of an argument's structural type:
+
+```thyrym
+for any A and B,
+    \'Function, A -> B' mapped over 'Values, a list of As'
+        => same as Values but Element := B
+```
+
+The result keeps the specific collection structure supplied as `Values` and changes only its element role. No separate parameter for the list family is required.
+
+This directional form also avoids false equality between arguments:
+
+```thyrym
+for any A and B,
+    \'Left, a list of As' combined with 'Right, a list of Bs'
+        => same as Left but Element := (A, B)
+```
+
+`Left` may be an array and `Right` a linked list when the implementation only preserves the representation of `Left`.
+
+### `a distinct ...`
+
+> **Working syntax:** The independence concept is established, but its exact grammar and unification semantics remain open.
+
+`a distinct Type` states that a result intentionally chooses an independent specialization satisfying `Type` instead of preserving an argument's specialization:
+
+```thyrym
+a distinct state of A
+```
+
+**Distinct** is preferred to **new**, which could misleadingly suggest allocation or object construction.
+
+### Parameters, Relations, And Quantifiables
+
+The working terminology is:
+
+- **parameter**: a universally quantified type variable introduced by `for any`;
+- **relation**: an explicit dependency or independence form such as `same as` or `a distinct`;
+- **quantifiable**: a provisional umbrella term for parameters and relations.
+
+## Return-Type Relationships
+
+> **Emerging rule:** The exact recursive enforcement and its interaction with monads are unresolved.
+
+A return type should not silently introduce fresh polymorphic structure by restating a broad type and losing argument specialization. Its variable parts should instead be derived through parameters or explicit relations.
+
+Returning `same as State` preserves the state argument's specialization. Returning `a distinct state of A` explicitly requests an independent state specialization. Returning a shared parameter such as `F` uses the common type inferred from all occurrences of `F`.
+
+Concrete wrappers require more work. A form such as `an act making same as State` is attractive, but higher-order mapping must also preserve the exact act, task, or other monad specialization returned by the mapped operator. Nested relation projection and monadic propagation are not yet settled.
+
+## Type-Producing Operators And Families
+
+A generic type constructor is an ordinary operator whose result is a type, not a separate compiler category. Parameters can distinguish several independently selected types satisfying one family from repeated applications of the same type-producing operator.
+
+When family identity matters, a shared family parameter may be appropriate. It should not be introduced merely to replace readable phrases such as `a list of As` with letters.
+
+For example, this result follows the vector argument without requiring the matrix and vector to use one representation family:
+
+```thyrym
+for any D and N,
+    \'Matrix, a DxD matrix of Ns'
+        * 'Vector, a vector of D Ns'
+        => same as Vector
+```
+
+If the operation genuinely requires one tensor family for both operands and the result, it can instead introduce a shared family parameter:
+
+```thyrym
+for any D; N; and T, a tensor,
+    \'Matrix, T of [D, D] Ns'
+        * 'Vector, T of [D] Ns'
+        => T of [D] Ns
+```
+
+These family-application forms remain advanced and partly provisional. Their semantic distinction is important: independently bounded type parameters may select unrelated implementations, while repeated application of one `T` preserves family identity.
+
+Thyrym's roles are named rather than positionally significant, so positional partial application is not the foundation for type families. The placeholder `it` may identify one missing role in a partial type application. Applying a family with several open roles likely requires explicit role names; that syntax remains exploratory.
+
+## Capability-Portable Polymorphism
+
+Types describe semantic capabilities rather than execution environments. Numeric distinctions should therefore express properties such as general float behavior, 16-bit behavior, or IEEE-specific operations rather than nominal CPU and GPU categories.
+
+A GLSL expression type can satisfy the general float capability and provide `+` or `*` implementations that construct shader expressions. The same source operator applied to ordinary floats performs arithmetic. A pure generic expression such as `(A + B) * C` can then be reused for CPU evaluation or shader construction, provided its parameters and return relations preserve the supplied specialization.
+
+An operator using IEEE-specific representation or bit operations must require the IEEE capability and will not automatically accept a GLSL expression that provides only general float behavior.
 
 ## Invariants
 

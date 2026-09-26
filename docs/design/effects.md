@@ -30,7 +30,7 @@ For example, an operation may accept:
 
 ```thyrym
 \get file size 'File, a view of File'
-    :: an act making an integer
+    => an act making an integer
 ```
 
 The expression syntax that creates a view is unresolved. In particular, `view File` is not established syntax.
