@@ -121,6 +121,10 @@ The invariant solver is not expected to be a complete theorem prover. A proposit
 
 The solver can distinguish interpretations of the same bits, such as signed, unsigned, and floating-point comparisons. Its exact normalization and implication rules remain under development.
 
+Invariant propositions may use exclusive alternatives. If a stopped computation can have either `A and B` or `A and C`, but not both cases, the invariant solver may represent that choice with logical exclusive-or and derive facts common to every case, including `A`.
+
+Logical exclusive-or is not a structural type-composition operator. Structural `or` retains alternatives without asserting that exactly one is possible, while `and` combines required components or capabilities. Exclusion belongs in invariants rather than in a distinct XOR type constructor.
+
 ### Trusted Assumptions
 
 Some valid guarantees may be impractical for the solver to prove. The preferred assumption form is:

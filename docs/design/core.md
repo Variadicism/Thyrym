@@ -78,7 +78,11 @@ Mutation and observable interaction with the outside world are represented expli
 
 Thyrym does not define whether ordinary computation is evaluated strictly, lazily, during compilation, in parallel, or through a mixture of strategies.
 
-A valid implementation may choose any evaluation strategy that preserves program semantics. The language specifies what must be computed and which effects must occur, not the schedule used to compute them. This freedom is central to Thyrym's optimization model.
+A valid implementation may choose any evaluation strategy that preserves program semantics. This includes freedom to memoize or recompute pure work, fuse or inline operations, and perform semantics-preserving rewrites. The language specifies results, dependencies, and guarantees rather than one schedule for producing them. Observable behavior must continue to satisfy declared types, invariants, effects, affine-resource contracts, convergence and stoppability guarantees, and every other explicit semantic requirement.
+
+A strict evaluation model may be a useful intuition, but it is not a language guarantee. Nor does Thyrym require bit-for-bit identity between all valid implementations when a contract permits multiple results, such as compile-time and platform floating-point approximations that both meet the declared numeric requirements.
+
+Tail-call lowering is likewise an implementation and performance concern rather than a source-level semantic guarantee. The compiler should eventually perform useful recursion-to-loop or accumulator transformations itself instead of relying entirely on its C target.
 
 ## The Irreducible Core
 
@@ -107,6 +111,7 @@ The major systems built on this foundation are:
 - effect and resource contracts in [effects](effects.md#effects-resources-and-trusted-interfaces);
 - source organization and imports in [modules](modules.md#modules-and-imports);
 - monadic composition and contextual binding in [monads](monads.md#monads-and-contextual-binding);
+- convergence, pursuits, stopping, and asynchronous containment in [pursuits](pursuits.md#pursuits-convergence-and-stopping);
 - scoped uniqueness guarantees in [uniqueness](uniqueness.md#scoped-uniqueness).
 
 ## Core Mental Model

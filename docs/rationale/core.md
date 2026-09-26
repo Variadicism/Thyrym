@@ -10,7 +10,9 @@ Foreign contracts and assumed invariants remain trusted boundaries because incor
 
 ## Pure Semantics With Unspecified Evaluation
 
-Ordinary computation is referentially transparent, while observable interaction is represented by typed monadic acts. The language specifies results, effects, and dependencies rather than a strict or lazy schedule so implementations can evaluate during compilation, reorder independent work, parallelize it, or choose another semantics-preserving strategy.
+Ordinary computation is referentially transparent, while observable interaction is represented by typed monadic acts. The language specifies results, effects, dependencies, resource obligations, and progress guarantees rather than a strict or lazy schedule so implementations can evaluate during compilation, reorder independent work, parallelize it, memoize or recompute pure work, or choose another semantics-preserving strategy.
+
+Bit-for-bit equivalence and tail-call lowering are not universal source guarantees because making them semantic would unnecessarily constrain valid numeric implementations and compiler transformations. Programs that need a particular result property must state it in their contracts.
 
 ## A Small Implementation-Guided Core
 

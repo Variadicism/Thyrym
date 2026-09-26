@@ -12,6 +12,10 @@ When repeated generic parameters match different argument types, combining match
 
 The assumption mechanism supports valid claims that a practical solver cannot prove. The compiler rejects a claim it disproves, accepts a claim it proves without trust, and treats only an unknown result as a programmer assumption. It cannot override a known falsehood.
 
+## Logical Exclusion Instead Of XOR Types
+
+Exclusive alternatives refine what states are possible, so they belong in invariants. Structural types describe provided components and capabilities and generally cannot promise the absence of additional capabilities. Keeping XOR out of structural composition avoids implying an exclusion that structural satisfaction cannot preserve.
+
 ## Bits And A Small Core
 
 `bits` is primitive because every data representation ultimately needs stored data. Other concepts are built from bits, operators, types, and invariants, allowing the irreducible core to stay small.

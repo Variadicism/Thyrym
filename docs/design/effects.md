@@ -37,6 +37,18 @@ External resources such as files are intended to use affine typing. Combined wit
 
 The full affine-resource representation and lifetime model remain under design.
 
+An affine **mutation** takes a resource and returns a transformed surviving form of that resource. **Consumption** returns no surviving form. Closing a file, killing an independently executing resource, and finally awaiting an exclusively controlled pursuit are examples of consumption; changing a pursuit's control state while returning the changed pursuit is mutation. Ordinary transformation-and-return should not be described as consumption.
+
+## Independent Execution
+
+Some resource contracts describe computation that progresses independently of the current path. Pursuit design provisionally calls such a compiler-significant resource an **asynchronous chamber**. It is affine, cannot be manufactured by ordinary pure code, and may be created by a trusted foreign or system operation. Threads, processes, and tasks may provide concrete forms.
+
+An operation that consumes a chamber and establishes that its execution has ended is a kill-like operation. Consumption alone does not imply termination; the operation's contract must explicitly guarantee that the independent execution cannot continue or resume. Forced termination must also expose truthful post-state guarantees for every affected resource. Detailed containment and stopping semantics are described in [pursuits](pursuits.md#asynchronous-containment).
+
+## Program Completion
+
+A terminating program is complete only after its required top-level acts and outstanding effect obligations have completed. A pure unused computation, including an unused pursuit, may be discarded; an effectful obligation may not be discarded merely because no result uses its value. Value availability therefore does not by itself imply that all independent effects have finished.
+
 ## Foreign Functions
 
 Thyrym expects to use foreign functions, especially C functions, for low-level and standard-library functionality.

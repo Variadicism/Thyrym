@@ -103,6 +103,12 @@ The solver may also apply an explicitly declared lawful distribution, such as mo
 
 The solver's implementation remains unresolved.
 
+## Pursuit Contexts
+
+A pursuit is a monadic representation of computation whose completion or stopping behavior matters. Pursuits use the same explicit caret depth and lawful contextual-composition rules as other monads; they do not introduce pursuit-specific binding syntax.
+
+Stoppable and unstoppable pursuits provide opposing guarantees and are separate monads. They do not implicitly bind through one another. A path that must run an unresolved unstoppable pursuit makes its enclosing computation unstoppable unless convergence is established or a separate stoppable containment mechanism is provided. The pursuit taxonomy and its composition operators are described in [pursuits](pursuits.md#pursuit-kinds).
+
 ## Explicit Caret Depth
 
 Ordinary definitions use `:=`. A caret in a binding operator binds through exactly one contextual layer:
@@ -163,6 +169,7 @@ The current policy is:
 | maybe/perhaps | No | Absence is a valid result; an operation should use an error when absence means failure. |
 | `a list of` | No | Discarding returned data does not inherently hide failure. |
 | `an act making` | No | Running an act for effects while ignoring its successful payload is legitimate. |
+| `a pursuit of` | No | Pure unused pursuit work may be discarded; separate effect and affine obligations still apply. |
 
 The danger property belongs to the Applicative abstraction and defaults to non-dangerous. Because every monad is also applicative, user-defined monads and other applicatives have one place to opt into dangerous-discard checking. The exact declaration syntax and propagation through deeply nested contexts remain open.
 
