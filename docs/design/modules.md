@@ -56,3 +56,11 @@ The difficult case is a helper shared by several top-level exported operators bu
 ## Compilation Units
 
 Separate compilation, compiled-module metadata, and the precise representation of exportable operator contexts remain future work.
+
+## Import Injection
+
+> **Working design:** Exact syntax, scoping, and target resolution remain open.
+
+**Import injection** redirects an import, module, or operator to an alternative implementation at compilation. It can replace arbitrary pure or non-affine dependencies and is particularly useful for tests.
+
+The mechanism is coupled to source and module organization. Moving an operator or reorganizing files may break an injection even when behavior remains equivalent, so import injection is not the only dependency-redirection mechanism. Captured affine resources instead use capability-preserving capture injection, described in [effects](effects.md#capture-injection).

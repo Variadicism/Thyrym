@@ -109,6 +109,7 @@ The major systems built on this foundation are:
 - extensible syntax, contextual grammar, and callable behavior in [operators](operators.md#operators-and-grammar);
 - structural types, invariants, primitive data, and compile-time knowledge in [types](types.md#types-and-compile-time-knowledge);
 - effect and resource contracts in [effects](effects.md#effects-resources-and-trusted-interfaces);
+- the working synchronization and deadlock-prevention model in [concurrency](concurrency.md#concurrency-and-synchronization);
 - source organization and imports in [modules](modules.md#modules-and-imports);
 - monadic composition and contextual binding in [monads](monads.md#monads-and-contextual-binding);
 - convergence, pursuits, stopping, and asynchronous containment in [pursuits](pursuits.md#pursuits-convergence-and-stopping);

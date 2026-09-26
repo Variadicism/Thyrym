@@ -13,3 +13,9 @@ The design should prefer ordinary scope over explicit visibility modifiers if sc
 How should separate compilation, compiled-module metadata, and exportable operator contexts be represented?
 
 The current import model is provisional and specifies source-level behavior only approximately.
+
+## Import Injection
+
+What syntax and scope redirect an imported module or operator, and how does resolution identify the target across local imports, selective imports, and compiled modules?
+
+Injection is intended as compile-time dependency replacement, particularly for tests, but it should remain visibly coupled to source organization rather than promise refactoring stability it cannot provide.

@@ -9,6 +9,7 @@ The design documentation is divided by language concern:
 - imports and compilation units are described in [modules](design/modules.md#modules-and-imports);
 - monadic composition and contextual binding are described in [monads](design/monads.md#monads-and-contextual-binding);
 - convergence, ongoing computation, stopping, awaiting, and races are described in [pursuits](design/pursuits.md#pursuits-convergence-and-stopping);
+- the working model for synchronization, lock planning, and deadlock prevention is described in [concurrency](design/concurrency.md#concurrency-and-synchronization);
 - scoped structural, generative, and probabilistic uniqueness is described in [uniqueness](design/uniqueness.md#scoped-uniqueness).
 
 Decision explanations and unresolved questions are kept in the corresponding `rationale` and `unresolved` directories.
