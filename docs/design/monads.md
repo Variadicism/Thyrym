@@ -101,6 +101,8 @@ The conversion from `an error` to `an error or A` is behavior specifically provi
 
 The solver may also apply an explicitly declared lawful distribution, such as moving an error context inside an act. It may not invent a distribution for arbitrary context pairs, silently unwrap a context, or discard its semantic information.
 
+If several implicit conversions could satisfy a use, the solver must report ambiguity rather than choose by hidden preference. Every implicit conversion must also be invocable explicitly so the programmer can resolve that ambiguity.
+
 The solver's implementation remains unresolved.
 
 ## Pursuit Contexts

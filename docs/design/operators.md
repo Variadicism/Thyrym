@@ -62,6 +62,12 @@ Pets := Cats + Dogs
 
 Variable definitions are operators that establish contextual grammar; they do not introduce mutable storage.
 
+### Static And Property Operators
+
+A **static op** is an ordinary operator whose implementation is selected directly by contextual resolution. A **property op** is an operator requirement declared by a type whose selected implementation is carried as evidence by a typed value. **Static op** is useful but provisional terminology.
+
+Property implementations are ordinary definitions rather than a separate declaration category. A static definition may be selected to satisfy a property and later be invoked dynamically through the resulting evidence. Property requirements and carried evidence are described in [types](types.md#properties-and-carried-evidence).
+
 ## Context-Dependent Grammar
 
 Thyrym's grammar is not context-free. Operators available in the current scope determine what source can be parsed and how it is understood. Declarations and definitions form a contextual stack searched from newest to oldest.
@@ -78,6 +84,46 @@ If a newer syntactic match fails a type or invariant requirement, resolution con
 > **The newest applicable operator wins.**
 
 An older operator is unreachable only when a newer operator covers every context in which the older one could apply.
+
+Static declarations and property declarations inhabit this same stack and compete through the same applicability rules. A newer static declaration may therefore shadow a property declaration. Their difference matters after selection: a static call names the selected definition directly, while a selected property declaration invokes the implementation carried by the relevant type evidence.
+
+### Return-Type Resolution
+
+Return types participate in applicability rather than being checked only after an overload is selected. If the surrounding expression requires a result type, a candidate whose every possible result does not satisfy that requirement is skipped.
+
+For declarations such as:
+
+```thyrym
+\interpret 'Text, a string'
+    => an integer :/=
+
+\interpret 'Text, a string'
+    => a date :/=
+```
+
+an integer-typed use rejects the date-returning candidate:
+
+```thyrym
+Count, an integer := interpret Input
+```
+
+Return invariants participate fully. A use requiring `an integer where it >= 0` accepts only a candidate whose possible results establish that invariant.
+
+When no surrounding return requirement exists, no return-type filter is invented. In `X := interpret Input`, the newest otherwise-applicable declaration is selected and its exact return type becomes the type of `X`.
+
+### Provisional Resolution And Backtracking
+
+Resolution may remain provisional while later source is parsed and checked. A locally applicable candidate can make the remaining program impossible to type-check; the compiler may then backtrack and continue with older declarations from the same lexical context.
+
+Semantically, resolution chooses the newest available interpretation that permits a valid interpretation of the program. This may require examining substantial later code, but declarations introduced later do not retroactively enter an earlier lexical context.
+
+Implementations may optimize search and commitment aggressively as long as they preserve these semantics.
+
+### Shadowing Diagnostics
+
+Contextual shadowing is intentional and supports local behavioral overrides. Accidental shadowing should nevertheless produce a warning, especially when imports introduce the competing declarations. Dead-code or unused-operator diagnostics should also identify near-miss overrides whose signatures prevent selection.
+
+An explicit selective import can communicate intentional replacement. General warning-suppression syntax and an `explain resolution` diagnostic remain unsettled tooling concerns.
 
 ## Thyry Patterns
 

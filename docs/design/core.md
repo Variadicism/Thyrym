@@ -107,7 +107,7 @@ The exact bootstrap inventory remains provisional until implementation demonstra
 The major systems built on this foundation are:
 
 - extensible syntax, contextual grammar, and callable behavior in [operators](operators.md#operators-and-grammar);
-- structural types, polymorphic relationships, invariants, primitive data, and compile-time knowledge in [types](types.md#types-and-compile-time-knowledge);
+- structural types, properties and evidence, polymorphic relationships, invariants, primitive data, and compile-time knowledge in [types](types.md#types-and-compile-time-knowledge);
 - effect and resource contracts in [effects](effects.md#effects-resources-and-trusted-interfaces);
 - the working synchronization and deadlock-prevention model in [concurrency](concurrency.md#concurrency-and-synchronization);
 - source organization and imports in [modules](modules.md#modules-and-imports);

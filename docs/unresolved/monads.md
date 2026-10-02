@@ -34,7 +34,7 @@ What pattern-matching syntax should inspect and recover from maybe/perhaps, `an 
 
 How should the general implicit conversion solver search and choose among outward lifts and declared lawful distributions?
 
-The solver must never infer caret depth, invent distribution laws, unwrap contexts, or discard contextual information.
+The solver must never infer caret depth, invent distribution laws, unwrap contexts, discard contextual information, or choose among ambiguous conversions. Every implicit conversion must have an explicit counterpart.
 
 ## Law Verification
 

@@ -14,11 +14,65 @@ Which normalization, implication, and interpretation rules should the invariant 
 
 The solver need not be complete, but its practical boundaries and treatment of complex mathematics remain open.
 
+## Property Arity
+
+Must every property requirement contain exactly one `one` argument?
+
+Exactly one instance position would make the owner of dynamic dispatch unambiguous for binary relationships such as equality, but the rule has not been finalized.
+
+## Hidden Relational Capabilities
+
+How can independently abstracted structural values recover a relationship that depends on compatible hidden types?
+
+If cats are equatable to cats and dogs to dogs, two values exposed only as pets need to distinguish cat/cat, dog/dog, and cat/dog without accidentally granting unrestricted structural reflection. Possible relational evidence models remain unresolved.
+
+## Runtime Structural Reflection
+
+May code test for a capability absent from a value's exposed static type, such as asking whether a value known only as `named` is also `messageable`?
+
+The current direction favors parametricity and avoiding unrestricted reflection, but hidden relational capabilities may require a carefully bounded mechanism.
+
+## Runtime Discrimination Of `or`
+
+Does possession of `A or B` permit runtime code to determine whether the current value satisfies `A`, `B`, or both?
+
+`or` is settled as inclusive, but conventional tagged-union elimination semantics are not established.
+
+## Nominal Escape Hatch
+
+Should Thyrym provide a compiler or native mechanism for deliberately distinguishing types with identical capabilities and invariants?
+
+Ordinary type identity remains structural. No nominal mechanism has been designed.
+
+## Recursive Structural Satisfaction
+
+What sound termination or cycle rule governs recursive capability proofs?
+
+Existing compiler machinery may already answer part of this question and should be reviewed before a replacement is designed.
+
+## Explicit Empty Type
+
+Does Thyrym need an intentionally uninhabited type, and if so, what explicit representation should it use?
+
+Provably contradictory invariants are errors rather than an implicit empty-type encoding.
+
 ## Trusted Assumption Form
 
 What exact operator form and syntax should expose trusted invariant assumptions?
 
 `assuming Invariant` is the preferred direction. Any final form must reject disproven claims, accept proven claims normally, and make an unknown claim an explicit trusted boundary.
+
+## Checked Refinement Syntax
+
+What explicit operator or control-flow syntax tests a runtime-dependent invariant and refines only its successful outcome?
+
+An unknown obligation must not become an automatic failing assertion. Failure needs a typed branch or result consistent with Thyrym's no-hidden-runtime-error rule.
+
+## Universal Law Syntax
+
+What exact syntax declares user-provided universally quantified solver laws?
+
+`assuming for all ...` is the current conceptual form, and no separate `law` keyword is presently required. Any final form must reject a law when an admitted counterexample is proven.
 
 ## Static Type Syntax
 
