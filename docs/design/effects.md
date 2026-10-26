@@ -79,6 +79,40 @@ Isolation, steadiness, synchronization, or another transformation cannot erase a
 
 Act contracts should expose effects more precisely than one opaque IO category so the compiler can determine interference. When contracts prove the transformation sound, an implementation may reorder or parallelize acts and eliminate or duplicate work whose required effects, resources, and results are preserved. Acts specify obligations and dependencies rather than one imperative schedule. Their composition is described in [monads](monads.md#monads-and-contextual-binding).
 
+## Unsafe Effect Escape Clauses
+
+> **Working design:** These names and purposes are preferred, but their exact semantics are not yet language guarantees.
+
+**The Unholy Trinity** is the working name for three exceptional clauses that allow an effectful computation to cross an otherwise pure boundary:
+
+| Clause | Intended purpose |
+| --- | --- |
+| `unsafely once, Act` | Present the result of a shared effectful computation as a pure value without duplicating that shared computation. |
+| `unsafely each time, Act` | Present the result of an effectful computation as a pure value without a nonduplication guarantee. |
+| `unsafely recursively, Builder` | Construct an effectful value whose builder can refer lazily to its own eventual result. |
+
+The comma is part of each proposed clause form. The names do not by themselves define what identifies a shared computation, whether an act must execute, which transformations may duplicate it, or which evaluation guarantees a recursive reference receives. Those questions remain open.
+
+These clauses are explicit developer assertions for exceptional cases where the compiler cannot establish a required property. They are not the ordinary interface for printing, file access, sockets, operating-system randomness, or foreign interaction. Unsafe use does not erase possible failure or automatically preserve totality; its contract must distinguish explicit failure results from properties trusted to the developer. The outstanding semantics are tracked in [effects](../unresolved/effects.md#unsafe-effect-escape-semantics).
+
+No general hidden deferred-I/O clause is currently proposed. In particular, the current API does not include an operation that turns on-demand file reads into an apparently pure lazy string.
+
+## Explicit Demand-Driven Streams
+
+Incremental I/O uses an explicit effectful stream. A producer supplies a chunk in response to a request made within an effectful computation, while pure transformations may process chunks after they are received. Reads, errors, effect ordering, and resource cleanup therefore remain visible to the surrounding act protocol.
+
+The following is an illustrative API sketch, not established Thyrym syntax:
+
+```thyrym
+with file "input.txt" as Source,
+    for each Chunk received from Source,
+        process Chunk
+```
+
+A stream protocol must represent read failure explicitly and define EOF, cancellation, early termination, handle closure, and cleanup failure. It may process data incrementally without representing secretly effectful contents as a pure `String`. High-performance implementations may use producer and consumer state machines, closures, continuations, and effectful steps; the model does not require hidden deferred I/O or recursive effect fixpoints.
+
+Holding a file open does not by itself guarantee that another process cannot modify it. Stability or purity claims require an explicit platform or resource contract rather than an assumption derived from an open handle.
+
 ## Isolated Acts
 
 An **isolated act** is an act whose relevant side effects are treated as confined or semantically irrelevant under the current policy. Isolation may express author intent or configuration rather than an intrinsic fact discoverable by the compiler.

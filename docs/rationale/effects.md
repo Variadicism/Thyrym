@@ -8,6 +8,24 @@ Acts expose effects and dependencies through types instead of hiding all interac
 
 Errors remain explicit because hiding exceptions inside acts would undermine Thyrym's requirement that runtime failure possibilities be represented and handled as values. Effect wrappers such as isolation or synchronization change how effects are observed, not which result cases exist.
 
+## Exceptional Unsafe Effect Escape
+
+Unsafe effect escape is deliberately exceptional because ordinary observable interaction should remain explicit in act types. Its purpose is to let a developer assert a property the compiler cannot prove, not to provide a convenient default route around effects or failure handling. Diagnostic instrumentation is a motivating use, but printing can still block or fail, so any diagnostic operation needs a narrow and truthful failure policy.
+
+The three proposed clauses describe programmer-facing intentions rather than inheriting implementation behavior from similarly motivated operations in another language. Shared lazy evaluation and a concurrency nonduplication guard may be one way to support `unsafely once`, so it is not assumed to require an external memo table or a wholly independent primitive from `unsafely each time`. A stronger exactly-once language guarantee could still require optimizer restrictions or compiler cooperation.
+
+Likewise, `unsafely each time` means that duplication is permitted, not that execution necessarily occurs on every use. `unsafely recursively` describes a lazy effectful fixpoint; it neither subsumes hidden deferred I/O in general nor establishes that streaming needs such a fixpoint.
+
+## Explicit Streaming Instead Of Hidden Deferred I/O
+
+Hidden on-demand I/O can move a read failure beyond the act and resource scope that opened the file. It also obscures effect order and makes it difficult to state when the handle closes after cancellation or early termination. An explicit demand-driven stream keeps every request effectful while still permitting bounded-memory incremental processing.
+
+Ordinary recursion and explicitly sequenced producer and consumer steps are sufficient for the basic architecture. Performance should be measured before adding an unsafe primitive. Lazy heavyweight initialization can instead use an explicitly requested effectful once-cell, while sensors, entropy, foreign calls, logging, and profiling should retain timing and effects in their contracts.
+
+## Other Unsafe Facilities
+
+No current use case requires a separate local-state monad or unsafe state-to-I/O conversion, a general raw type coercion, or specialized unsafe mutable-array primitives. This is provisional rather than a claim that such facilities can never be needed. Local mutation still requires a sound non-escape story, safe representation-preserving conversion is distinct from arbitrary coercion, and foreign mutation must be governed by contracts precise enough for the compiler to copy or prove destructive reuse unobservable.
+
 ## Single Affine Ownership
 
 One owning path prevents accidental aliasing and conflicting mutation while permitting deliberate ownership transfer. Donation makes long-lived escape explicit rather than allowing a captured value to create a hidden second owner. Views separate non-owning access from transfer.
